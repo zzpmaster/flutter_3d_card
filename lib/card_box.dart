@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'card_detail.dart';
+
 class CardBox extends StatelessWidget {
   const CardBox({Key? key}) : super(key: key);
 
@@ -8,7 +10,7 @@ class CardBox extends StatelessWidget {
     return Column(
       children: [
         Expanded(flex: 3, child: CardsBody()),
-        Expanded(
+        const Expanded(
           flex: 1,
           child: CardsHorizontal(),
         ),
@@ -24,33 +26,66 @@ class CardsBody extends StatefulWidget {
   }
 }
 
-class _CardsBodyState extends State<CardsBody>
-    with SingleTickerProviderStateMixin {
+class _CardsBodyState extends State<CardsBody> with TickerProviderStateMixin {
   // double _value = 0.15;
   bool _selectedMode = false;
   late AnimationController _animationController;
-  late int selectedIndex;
+  late AnimationController _animationMoveController;
+  int? selectedIndex;
 
   Future<void> _onCardSelected(String title, int index) async {
     setState(() {
       selectedIndex = index;
     });
+    const duration = Duration(milliseconds: 750);
+    _animationMoveController.forward();
+    await Navigator.of(context).push(
+      PageRouteBuilder(
+        transitionDuration: duration,
+        reverseTransitionDuration: duration,
+        pageBuilder: ((context, animation, secondaryAnimation) {
+          return FadeTransition(
+            opacity: animation,
+            child: CardDetail(
+              title: title,
+              index: index,
+            ),
+          );
+        }),
+      ),
+    );
+    _animationMoveController.reverse();
   }
 
   @override
   void initState() {
     _animationController = AnimationController(
         vsync: this,
-        lowerBound: 0.15,
-        upperBound: 0.5,
+        lowerBound: 0.2,
+        upperBound: 0.45,
         duration: const Duration(milliseconds: 500));
+
+    _animationMoveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _animationMoveController.dispose();
     super.dispose();
+  }
+
+  int _getCurrentFactor(int currentIndex) {
+    if (selectedIndex == null || selectedIndex == currentIndex) {
+      return 0;
+    } else if (selectedIndex! > currentIndex) {
+      return 1;
+    }
+    return -1;
   }
 
   @override
@@ -82,10 +117,10 @@ class _CardsBodyState extends State<CardsBody>
                 ..setEntry(3, 2, 0.001)
                 ..rotateX(selectionValue),
               child: AbsorbPointer(
-                absorbing: _selectedMode,
+                absorbing: !_selectedMode,
                 child: Container(
-                  // color: Colors.white,
-                  width: constraints.maxWidth * 0.45,
+                  color: Colors.red,
+                  width: constraints.maxWidth * 0.9,
                   height: constraints.maxHeight,
                   child: Stack(
                     children: [
@@ -98,6 +133,8 @@ class _CardsBodyState extends State<CardsBody>
                               onSelected: (title) {
                                 _onCardSelected(title, index);
                               },
+                              vfactor: _getCurrentFactor(index),
+                              animation: _animationMoveController,
                               depth: index)).reversed,
                       // Positioned(
                       //   bottom: 0,
@@ -126,15 +163,18 @@ class _CardsBodyState extends State<CardsBody>
   }
 }
 
-class CardItem extends StatelessWidget {
+// class CardItem extends StatelessWidget {
+class CardItem extends AnimatedWidget {
   const CardItem(
       {Key? key,
       required this.title,
       required this.height,
       required this.depth,
       required this.onSelected,
-      required this.percent})
-      : super(key: key);
+      required this.percent,
+      this.vfactor = 0,
+      required this.animation})
+      : super(key: key, listenable: animation);
 
   final double height;
   final double percent;
@@ -142,6 +182,10 @@ class CardItem extends StatelessWidget {
   final int depth;
   final double depthFactor = 50;
   final ValueChanged<String> onSelected;
+  final int vfactor;
+  final Animation<double> animation;
+
+  // Animation<double> get animation => listenable;
 
   @override
   Widget build(BuildContext context) {
@@ -149,23 +193,31 @@ class CardItem extends StatelessWidget {
     return Positioned(
       left: 0,
       right: 0,
-      top: height + -depth * height / 2.0 * percent - bottomMargin,
-      child: Transform(
-        alignment: Alignment.center,
-        transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.001)
-          ..translate(0.0, 0.0, depth * depthFactor),
-        child: InkWell(
-          onTap: () {
-            // print('touch');
-            onSelected(title);
-          },
-          child: SizedBox(
-            height: height,
-            child: CardWidget(title: title),
-          ),
-        ),
-      ),
+      // top: height + -depth * height / 2.0 * percent - bottomMargin,
+      top: height + -depth * height / 2.0 * percent,
+      child: Opacity(
+          opacity: 1.0,
+          child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..translate(
+                  0.0,
+                  // 0.0,
+                  vfactor *
+                      animation.value *
+                      MediaQuery.of(context).size.height,
+                  depth * depthFactor),
+            child: InkWell(
+              onTap: () {
+                onSelected(title);
+              },
+              child: SizedBox(
+                height: height,
+                child: CardWidget(title: title),
+              ),
+            ),
+          )),
     );
   }
 }
@@ -201,9 +253,13 @@ class CardsHorizontal extends StatelessWidget {
 }
 
 class CardWidget extends StatelessWidget {
-  const CardWidget({Key? key, required this.title}) : super(key: key);
+  const CardWidget(
+      {Key? key, required this.title, this.width = 200, this.height = 30})
+      : super(key: key);
 
   final String title;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -221,8 +277,8 @@ class CardWidget extends StatelessWidget {
             style: const TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          width: 200,
-          height: 30,
+          width: width,
+          height: height,
           color: const Color(0xff4D40E4),
         ),
       ),
