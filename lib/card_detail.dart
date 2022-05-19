@@ -9,13 +9,41 @@ class CardDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final border = BorderRadius.circular(15.0);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Card Detail'),
       ),
-      body: Container(
-        child: Text('title: $title'),
-      ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Container(
+          alignment: Alignment.topCenter,
+          padding: const EdgeInsets.only(top: 10),
+          child: Hero(
+            tag: title,
+            child: PhysicalModel(
+              color: Colors.black,
+              borderRadius: border,
+              elevation: 10,
+              child: ClipRRect(
+                borderRadius: border,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 10, top: 8),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  width: constraints.maxWidth * 0.85,
+                  height: constraints.maxHeight * 0.25,
+                  color: const Color(0xff4D40E4),
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 }

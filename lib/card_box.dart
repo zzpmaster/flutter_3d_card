@@ -54,7 +54,7 @@ class _CardsBodyState extends State<CardsBody> with TickerProviderStateMixin {
         }),
       ),
     );
-    _animationMoveController.reverse();
+    _animationMoveController.reverse(from: 1.0);
   }
 
   @override
@@ -120,37 +120,25 @@ class _CardsBodyState extends State<CardsBody> with TickerProviderStateMixin {
                 absorbing: !_selectedMode,
                 child: Container(
                   color: Colors.red,
-                  width: constraints.maxWidth * 0.9,
+                  width: constraints.maxWidth,
                   height: constraints.maxHeight,
                   child: Stack(
+                    // clipBehavior: Clip.none,
                     children: [
                       ...List.generate(
-                          4,
-                          (index) => CardItem(
-                              height: constraints.maxHeight / 2,
-                              title: 'Card $index',
-                              percent: selectionValue,
-                              onSelected: (title) {
-                                _onCardSelected(title, index);
-                              },
-                              vfactor: _getCurrentFactor(index),
-                              animation: _animationMoveController,
-                              depth: index)).reversed,
-                      // Positioned(
-                      //   bottom: 0,
-                      //   left: 0,
-                      //   right: 0,
-                      //   child: Slider(
-                      //     value: _value,
-                      //     min: 0.15,
-                      //     max: 0.5,
-                      //     onChanged: (v) {
-                      //       setState(() {
-                      //         _value = v;
-                      //       });
-                      //     },
-                      //   ),
-                      // )
+                        4,
+                        (index) => CardItem(
+                            width: constraints.maxWidth * 0.75,
+                            height: constraints.maxHeight / 2,
+                            title: 'Card $index',
+                            percent: selectionValue,
+                            onSelected: (title) {
+                              _onCardSelected(title, index);
+                            },
+                            vfactor: _getCurrentFactor(index),
+                            animation: _animationMoveController,
+                            depth: index),
+                      ).reversed,
                     ],
                   ),
                 ),
@@ -168,14 +156,16 @@ class CardItem extends AnimatedWidget {
   const CardItem(
       {Key? key,
       required this.title,
+      required this.width,
       required this.height,
       required this.depth,
       required this.onSelected,
       required this.percent,
       this.vfactor = 0,
-      required this.animation})
+      required Animation<double> animation})
       : super(key: key, listenable: animation);
 
+  final double width;
   final double height;
   final double percent;
   final String title;
@@ -183,41 +173,43 @@ class CardItem extends AnimatedWidget {
   final double depthFactor = 50;
   final ValueChanged<String> onSelected;
   final int vfactor;
-  final Animation<double> animation;
-
-  // Animation<double> get animation => listenable;
+  Animation<double> get animation => listenable as Animation<double>;
 
   @override
   Widget build(BuildContext context) {
     final bottomMargin = height / 4.0;
-    return Positioned(
+    return Positioned.fill(
       left: 0,
       right: 0,
       // top: height + -depth * height / 2.0 * percent - bottomMargin,
       top: height + -depth * height / 2.0 * percent,
       child: Opacity(
-          opacity: 1.0,
+        opacity: vfactor == 0 ? 1 : 1 - animation.value,
+        child: Hero(
+          tag: title,
           child: Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.001)
               ..translate(
                   0.0,
-                  // 0.0,
                   vfactor *
                       animation.value *
                       MediaQuery.of(context).size.height,
                   depth * depthFactor),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 onSelected(title);
               },
               child: SizedBox(
+                width: 50,
                 height: height,
                 child: CardWidget(title: title),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -239,8 +231,12 @@ class CardsHorizontal extends StatelessWidget {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CardWidget(
-                  title: 'Card $index',
+                child: SizedBox(
+                  width: 200,
+                  height: 30,
+                  child: CardWidget(
+                    title: 'Card $index',
+                  ),
                 ),
               );
             },
@@ -253,13 +249,9 @@ class CardsHorizontal extends StatelessWidget {
 }
 
 class CardWidget extends StatelessWidget {
-  const CardWidget(
-      {Key? key, required this.title, this.width = 200, this.height = 30})
-      : super(key: key);
+  const CardWidget({Key? key, required this.title}) : super(key: key);
 
   final String title;
-  final double width;
-  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -277,8 +269,6 @@ class CardWidget extends StatelessWidget {
             style: const TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          width: width,
-          height: height,
           color: const Color(0xff4D40E4),
         ),
       ),
