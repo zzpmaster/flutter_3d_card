@@ -7,14 +7,25 @@ class CardBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(flex: 3, child: CardsBody()),
-        const Expanded(
-          flex: 1,
-          child: CardsHorizontal(),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: const Text(
+          '3D Card',
+          style: TextStyle(color: Colors.black87),
         ),
-      ],
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
+      body: Column(
+        children: [
+          Expanded(flex: 3, child: CardsBody()),
+          const Expanded(
+            flex: 1,
+            child: CardsHorizontal(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -113,23 +124,22 @@ class _CardsBodyState extends State<CardsBody> with TickerProviderStateMixin {
             },
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateX(selectionValue),
+              transform: Matrix4.identity()..setEntry(3, 2, 0.001),
+              // ..rotateX(selectionValue),
               child: AbsorbPointer(
                 absorbing: !_selectedMode,
                 child: Container(
-                  color: Colors.red,
+                  color: Colors.transparent,
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
                   child: Stack(
-                    // clipBehavior: Clip.none,
+                    clipBehavior: Clip.none,
                     children: [
                       ...List.generate(
                         4,
                         (index) => CardItem(
                             width: constraints.maxWidth * 0.75,
-                            height: constraints.maxHeight / 2,
+                            height: constraints.maxHeight / 2.5,
                             title: 'Card $index',
                             percent: selectionValue,
                             onSelected: (title) {
@@ -178,9 +188,9 @@ class CardItem extends AnimatedWidget {
   @override
   Widget build(BuildContext context) {
     final bottomMargin = height / 4.0;
-    return Positioned.fill(
-      left: 0,
-      right: 0,
+    return Positioned(
+      left: 25,
+      right: 25,
       // top: height + -depth * height / 2.0 * percent - bottomMargin,
       top: height + -depth * height / 2.0 * percent,
       child: Opacity(
@@ -202,9 +212,11 @@ class CardItem extends AnimatedWidget {
                 onSelected(title);
               },
               child: SizedBox(
-                width: 50,
                 height: height,
-                child: CardWidget(title: title),
+                child: CardWidget(
+                  title: title,
+                  index: depth,
+                ),
               ),
             ),
           ),
@@ -232,10 +244,11 @@ class CardsHorizontal extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: SizedBox(
-                  width: 200,
-                  height: 30,
+                  // width: 200,
+                  // height: 30,
                   child: CardWidget(
                     title: 'Card $index',
+                    index: index,
                   ),
                 ),
               );
@@ -249,9 +262,11 @@ class CardsHorizontal extends StatelessWidget {
 }
 
 class CardWidget extends StatelessWidget {
-  const CardWidget({Key? key, required this.title}) : super(key: key);
+  const CardWidget({Key? key, required this.title, required this.index})
+      : super(key: key);
 
   final String title;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -261,15 +276,10 @@ class CardWidget extends StatelessWidget {
       borderRadius: border,
       elevation: 10,
       child: ClipRRect(
-        borderRadius: border,
-        child: Container(
-          padding: const EdgeInsets.only(left: 10, top: 8),
-          child: Text(
-            title,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          color: const Color(0xff4D40E4),
+        // borderRadius: border,
+        child: Image.asset(
+          'images/img${index + 1}.png',
+          fit: BoxFit.fill,
         ),
       ),
     );

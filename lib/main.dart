@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'card_box.dart';
+import 'animation_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'My Cards'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -73,16 +74,30 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Center(
+            child: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.black87),
+        )),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black87,
+          onPressed: () => null,
+        ),
+        actions: [
+          IconButton(
+            color: Colors.black87,
+            icon: const Icon(Icons.search),
+            onPressed: () => null,
+          )
+        ],
+        backgroundColor: Colors.white,
       ),
-      body: const CardBox(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body:
+          const AnimationList(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
