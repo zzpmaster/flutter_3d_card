@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'card_box.dart';
+import 'slides_page.dart';
 
 class AnimationList extends StatelessWidget {
   const AnimationList({Key? key}) : super(key: key);
@@ -23,10 +24,10 @@ class AnimationList extends StatelessWidget {
           padding: const EdgeInsets.only(top: 20),
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const CardBox()));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => SlidesPage()));
             },
-            child: const Text('3D Card'),
+            child: const Text('Slides'),
           ),
         )
       ]),
