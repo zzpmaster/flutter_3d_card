@@ -5,11 +5,18 @@ import 'package:flutter_3d_card/slides_page.dart';
 
 class SlideWidget extends StatefulWidget {
   SlideWidget(
-      {Key? key, required this.title, required this.type, required this.data})
+      {Key? key,
+      required this.title,
+      required this.type,
+      required this.data,
+      required this.longPress,
+      required this.animationController})
       : super(key: key);
   final String title;
   final int type;
   final List<CardItem> data;
+  final VoidCallback longPress;
+  final AnimationController animationController;
   @override
   State<SlideWidget> createState() => SlideWidgetState();
 }
@@ -17,6 +24,16 @@ class SlideWidget extends StatefulWidget {
 class SlideWidgetState extends State<SlideWidget> {
   final Color r =
       Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +46,22 @@ class SlideWidgetState extends State<SlideWidget> {
           itemBuilder: ((context, index) {
             return GestureDetector(
               onLongPress: () {
-                print(111);
+                // print(111);
+                widget.longPress();
               },
               child: ShakeWidget(
+                controller: widget.animationController,
                 child: Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.album),
-                    title: Text('The ${widget.data[index].title}'),
-                    subtitle: Text('Amount: ${widget.data[index].amount}'),
+                  child: SizedBox(
+                    height: 120,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.holiday_village),
+                        Text('The ${widget.data[index].title}'),
+                        Text('Amount: ${widget.data[index].amount}')
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -46,71 +71,31 @@ class SlideWidgetState extends State<SlideWidget> {
   }
 }
 
-class ShakeWidget extends StatefulWidget {
-  ShakeWidget({Key? key, required this.child}) : super(key: key);
+class ShakeWidget extends AnimatedWidget {
+  ShakeWidget({required this.controller, required this.child})
+      : super(listenable: controller);
 
+  final AnimationController controller;
   final Widget child;
 
-  @override
-  State<ShakeWidget> createState() => _ShakeWidgetState();
-}
-
-class _ShakeWidgetState extends State<ShakeWidget>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    animationController.addStatusListener(_updateStatus);
-    shake();
-  }
-
-  void _updateStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      animationController.reset();
-      animationController.forward();
-    }
-  }
-
-  void shake() {
-    animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    animationController.removeStatusListener(_updateStatus);
-    super.dispose();
-  }
+  final random = math.Random().nextBool() ? -1 : 1;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animationController,
+      animation: controller,
       builder: (context, child) {
-        final sineValue = math.sin(math.pi * 4 * animationController.value);
-        // return Transform(
-        //   // offset: Offset(sineValue * 10, 0),
-        //   transform: Matrix4.identity()..setRotationY(100 * sineValue),
-        //   child: child,
-        // );
+        final sineValue = math.sin(math.pi * 4 * controller.value) * random;
         // return Transform.translate(
         //   offset: Offset(sineValue * 10, 0),
-        //   // transform: Matrix4.identity()..setRotationY(100 * sineValue),
         //   child: child,
         // );
         return Transform.rotate(
-          angle: sineValue / 50,
-          // transform: Matrix4.identity()..setRotationY(100 * sineValue),
+          angle: sineValue / 150,
           child: child,
         );
       },
-      child: widget.child,
+      child: child,
     );
   }
 }
