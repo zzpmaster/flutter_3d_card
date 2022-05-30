@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'card_box.dart';
+import 'nav_bar.dart';
 import 'slides_page.dart';
 
 class AnimationList extends StatelessWidget {
@@ -26,6 +27,16 @@ class AnimationList extends StatelessWidget {
             onPressed: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => SlidesPage()));
+            },
+            child: const Text('Slides'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => NavBar()));
             },
             child: const Text('Slides'),
           ),
