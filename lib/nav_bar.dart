@@ -9,7 +9,7 @@ class NavBar extends StatefulWidget {
   State<NavBar> createState() => _NavBarState();
 }
 
-const _minHeight = 70.0;
+const _minHeight = 80.0;
 const _maxHeight = 350.0;
 
 class _NavBarState extends State<NavBar> with SingleTickerProviderStateMixin {
@@ -35,21 +35,20 @@ class _NavBarState extends State<NavBar> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final mWidth = size.width * 0.5;
+    final mWidth = size.width * 0.6;
     return Scaffold(
-      appBar: AppBar(title: const Text('Nav Bar')),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Nav Bar',
+          style: TextStyle(color: Colors.black87),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
+      backgroundColor: const Color.fromRGBO(120, 110, 239, 1),
       body: Container(),
       bottomNavigationBar: GestureDetector(
-        // onTap: () {
-        //   setState(() {
-        //     _expanded = !_expanded;
-        //   });
-        //   if (_expanded) {
-        //     _controller.forward();
-        //   } else {
-        //     _controller.reverse();
-        //   }
-        // },
         onVerticalDragUpdate: _expanded
             ? (details) {
                 setState(() {
@@ -80,7 +79,8 @@ class _NavBarState extends State<NavBar> with SingleTickerProviderStateMixin {
           builder: ((context, child) {
             // final value = _controller.value;
             // final value = Curves.elasticInOut.transform(_controller.value);
-            final value = ElasticInOutCurve(0.7).transform(_controller.value);
+            final value =
+                const ElasticInOutCurve(0.7).transform(_controller.value);
             return Stack(
               children: [
                 Positioned(
@@ -91,9 +91,9 @@ class _NavBarState extends State<NavBar> with SingleTickerProviderStateMixin {
                   bottom: lerpDouble(40, 0, value),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.purple,
+                      color: Colors.white,
                       borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
+                        top: const Radius.circular(20),
                         bottom: Radius.circular(lerpDouble(20, 0, value)!),
                       ),
                     ),
@@ -114,50 +114,91 @@ class _NavBarState extends State<NavBar> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildContent() {
+    final size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.all(20),
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        child: Column(
-          children: [
-            Column(
+        child: SizedBox(
+            width: size.width,
+            child: Column(
               children: [
-                Text('Title'),
-                Text('Content'),
+                _buildAvatar(width: 60, height: 60),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  'Jake Joseph',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                    'Product design as a verb is to create a new product to be sold by a business to its customers.[1] A very broad coefficient and effective generation and development of ideas through a process that leads to new products.[2] Thus, it is a major aspect of new product development.',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 10,
+                    style: TextStyle(fontSize: 16)),
               ],
-            )
-          ],
-        ),
+            )),
+      ),
+    );
+  }
+
+  Widget _buildAvatar({required double width, required double height}) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color.fromRGBO(234, 144, 145, 1),
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      height: height,
+      width: width,
+      child: const Icon(
+        Icons.apple,
+        color: Colors.white,
       ),
     );
   }
 
   Widget _buildMiniContent() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Icon(
-          Icons.apple,
-          color: Colors.white,
+    return GestureDetector(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildAvatar(width: 40, height: 40),
+            const SizedBox(
+              width: 10,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Padding(
+                    padding: EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      'Jake Joseph',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    )),
+                Text(
+                  'Product Designer',
+                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+                )
+              ],
+            ),
+          ],
         ),
-        GestureDetector(
-          child: Icon(
-            Icons.apple,
-            color: Colors.white,
-          ),
-          onTap: () {
-            setState(() {
-              _expanded = true;
-              _currentHeight = _maxHeight;
-              _controller.forward(from: 0.0);
-            });
-          },
-        ),
-        Icon(
-          Icons.apple,
-          color: Colors.white,
-        ),
-      ],
+      ),
+      onTap: () {
+        setState(() {
+          _expanded = true;
+          _currentHeight = _maxHeight;
+          _controller.forward(from: 0.0);
+        });
+      },
     );
   }
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(flutter_3d_card LANGUAGES CXX)
+project(flutter_animation LANGUAGES CXX)
 
-set(BINARY_NAME "flutter_3d_card")
+set(BINARY_NAME "flutter_animation")
 
 cmake_policy(SET CMP0063 NEW)
 

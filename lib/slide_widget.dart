@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:flutter_3d_card/slides_page.dart';
+import 'package:flutter_animation/slides_page.dart';
 
 class SlideWidget extends StatefulWidget {
   SlideWidget(
@@ -44,27 +44,34 @@ class SlideWidgetState extends State<SlideWidget> {
       child: ListView.builder(
           itemCount: widget.data.length,
           itemBuilder: ((context, index) {
-            return GestureDetector(
-              onLongPress: () {
-                // print(111);
-                widget.longPress();
-              },
-              child: ShakeWidget(
-                controller: widget.animationController,
-                child: Card(
-                  child: SizedBox(
-                    height: 120,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.holiday_village),
-                        Text('The ${widget.data[index].title}'),
-                        Text('Amount: ${widget.data[index].amount}')
-                      ],
-                    ),
+            Widget sw = ShakeWidget(
+              controller: widget.animationController,
+              child: Card(
+                child: SizedBox(
+                  width: 300,
+                  height: 120,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.holiday_village),
+                      Text('The ${widget.data[index].title}'),
+                      Text('Amount: ${widget.data[index].amount}')
+                    ],
                   ),
                 ),
               ),
+            );
+
+            return Draggable(
+              child: GestureDetector(
+                onLongPress: () {
+                  // print(111);
+                  widget.longPress();
+                },
+                child: sw,
+              ),
+              feedback: sw,
+              childWhenDragging: Container(),
             );
           })),
     );
@@ -85,13 +92,13 @@ class ShakeWidget extends AnimatedWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        final sineValue = math.sin(math.pi * 4 * controller.value) * random;
+        final sineValue = math.sin(math.pi * 4 * controller.value) / 50;
         // return Transform.translate(
         //   offset: Offset(sineValue * 10, 0),
         //   child: child,
         // );
         return Transform.rotate(
-          angle: sineValue / 150,
+          angle: random * sineValue,
           child: child,
         );
       },

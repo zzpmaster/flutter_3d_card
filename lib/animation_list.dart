@@ -38,7 +38,7 @@ class AnimationList extends StatelessWidget {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => NavBar()));
             },
-            child: const Text('Slides'),
+            child: const Text('Nav Bar'),
           ),
         )
       ]),

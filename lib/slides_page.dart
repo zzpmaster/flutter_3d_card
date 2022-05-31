@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_3d_card/slide_widget.dart';
+import 'package:flutter_animation/slide_widget.dart';
 import 'dart:math' as math;
 import 'dots_indicator.dart';
 
@@ -79,6 +79,7 @@ class _SlidesPageState extends State<SlidesPage>
     setState(() {
       editButton = false;
     });
+    animationController.reset();
     animationController.stop();
   }
 

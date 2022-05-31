@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'My Cards'),
+      home: const MyHomePage(title: 'Animation'),
       debugShowCheckedModeBanner: false,
     );
   }
