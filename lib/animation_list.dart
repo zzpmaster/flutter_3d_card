@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animation/tween_animation_page.dart';
 
 import 'card_box.dart';
 import 'nav_bar.dart';
@@ -11,6 +12,16 @@ class AnimationList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => TweenAnimationPage()));
+            },
+            child: const Text('Tween Animation'),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.only(top: 20),
           child: ElevatedButton(
