@@ -27,11 +27,14 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
               children: [
                 // if (old != -1)
                 Transform.translate(
-                  offset: Offset(0.0, 1 - value * 40),
-                  child: Text(
-                    '$counter',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w900, fontSize: 30),
+                  offset: Offset(0.0, (1 - value) * 40),
+                  child: Opacity(
+                    opacity: value,
+                    child: Text(
+                      '$counter',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 30),
+                    ),
                   ),
                 ),
                 if (old != -1)
@@ -59,6 +62,20 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
               counter = counter + 1;
             });
           }),
+    );
+  }
+}
+
+class ProgressCounter extends StatelessWidget {
+  const ProgressCounter({Key? key, required this.value}) : super(key: key);
+
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '${(value * 100).truncate()}',
+      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 30),
     );
   }
 }

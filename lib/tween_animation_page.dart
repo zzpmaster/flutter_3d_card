@@ -68,7 +68,7 @@ class TweenAnimationPage extends StatelessWidget {
                     ),
                   );
                 },
-              )
+              ),
             ],
           )),
     );

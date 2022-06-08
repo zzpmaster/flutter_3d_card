@@ -4,6 +4,7 @@ import 'package:flutter_animation/tween_animation_page.dart';
 import 'package:flutter_animation/dashboard.dart';
 
 import 'card_box.dart';
+import 'iIgnition.dart';
 import 'nav_bar.dart';
 import 'slides_page.dart';
 
@@ -22,6 +23,16 @@ class AnimationList extends StatelessWidget {
                   builder: (context) => const TweenAnimationPage()));
             },
             child: const Text('Tween Animation'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const IgnitiOn()));
+            },
+            child: const Text('IgnitiOn'),
           ),
         ),
         Padding(
