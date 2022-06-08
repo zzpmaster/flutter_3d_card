@@ -15,15 +15,19 @@ class _SlidesPageState extends State<SlidesPage>
   final controller = PageController(initialPage: 0);
 
   late List<CardItem> data;
-  late List<Widget> widgets;
+  // late List<Widget> widgets;
 
   late final AnimationController animationController;
   bool editButton = false;
+  bool dragEnable = false;
 
   Future<void> _onLongPress() async {
     if (editButton) {
       return;
     }
+    setState(() {
+      dragEnable = true;
+    });
     shake();
   }
 
@@ -41,16 +45,6 @@ class _SlidesPageState extends State<SlidesPage>
     controller.addListener(() {
       // controller.page.round()
     });
-
-    widgets = List.generate(
-        3,
-        (index) => SlideWidget(
-            animationController: animationController,
-            longPress: _onLongPress,
-            type: index + 1,
-            title: 'Slide $index',
-            data:
-                data.where((element) => element.type == (index + 1)).toList()));
   }
 
   void initAnimation() {
@@ -85,10 +79,11 @@ class _SlidesPageState extends State<SlidesPage>
 
   @override
   void dispose() {
-    super.dispose();
+    stop();
     controller.dispose();
     animationController.dispose();
     animationController.removeStatusListener(_updateStatus);
+    super.dispose();
   }
 
   @override
@@ -102,6 +97,9 @@ class _SlidesPageState extends State<SlidesPage>
             child: IconButton(
               onPressed: () {
                 stop();
+                setState(() {
+                  dragEnable = false;
+                });
               },
               icon: const Icon(
                 Icons.done,
@@ -112,7 +110,19 @@ class _SlidesPageState extends State<SlidesPage>
       ),
       body: Stack(
         children: [
-          PageView(controller: controller, children: widgets),
+          PageView(
+              controller: controller,
+              children: List.generate(
+                  3,
+                  (index) => SlideWidget(
+                      animationController: animationController,
+                      longPress: _onLongPress,
+                      type: index + 1,
+                      title: 'Slide $index',
+                      dragEnable: dragEnable,
+                      data: data
+                          .where((element) => element.type == (index + 1))
+                          .toList()))),
           Positioned(
             bottom: 30.0,
             left: 0.0,

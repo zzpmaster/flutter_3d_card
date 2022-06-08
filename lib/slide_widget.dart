@@ -10,6 +10,7 @@ class SlideWidget extends StatefulWidget {
       required this.type,
       required this.data,
       required this.longPress,
+      required this.dragEnable,
       required this.animationController})
       : super(key: key);
   final String title;
@@ -17,6 +18,7 @@ class SlideWidget extends StatefulWidget {
   final List<CardItem> data;
   final VoidCallback longPress;
   final AnimationController animationController;
+  final bool dragEnable;
   @override
   State<SlideWidget> createState() => SlideWidgetState();
 }
@@ -44,35 +46,11 @@ class SlideWidgetState extends State<SlideWidget> {
       child: ListView.builder(
           itemCount: widget.data.length,
           itemBuilder: ((context, index) {
-            Widget sw = ShakeWidget(
-              controller: widget.animationController,
-              child: Card(
-                child: SizedBox(
-                  width: 300,
-                  height: 120,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.holiday_village),
-                      Text('The ${widget.data[index].title}'),
-                      Text('Amount: ${widget.data[index].amount}')
-                    ],
-                  ),
-                ),
-              ),
-            );
-
-            return Draggable(
-              child: GestureDetector(
-                onLongPress: () {
-                  // print(111);
-                  widget.longPress();
-                },
-                child: sw,
-              ),
-              feedback: sw,
-              childWhenDragging: Container(),
-            );
+            return SlideItem(
+                controller: widget.animationController,
+                item: widget.data[index],
+                dragEnable: widget.dragEnable,
+                longPress: widget.longPress);
           })),
     );
   }
@@ -104,5 +82,68 @@ class ShakeWidget extends AnimatedWidget {
       },
       child: child,
     );
+  }
+}
+
+class SlideItem extends StatefulWidget {
+  SlideItem(
+      {Key? key,
+      required this.controller,
+      required this.item,
+      required this.dragEnable,
+      required this.longPress})
+      : super(key: key);
+
+  AnimationController controller;
+  CardItem item;
+  final bool dragEnable;
+  Function longPress;
+
+  @override
+  State<SlideItem> createState() => _SlideItemState();
+}
+
+class _SlideItemState extends State<SlideItem> {
+  double x = 0.0;
+  double y = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPress: !widget.dragEnable
+          ? () {
+              widget.longPress();
+            }
+          : null,
+      onTapDown: widget.dragEnable
+          ? (detail) {
+              setState(() {
+                x = detail.globalPosition.dx;
+                y = detail.globalPosition.dy;
+              });
+            }
+          : null,
+      child: Container(
+        child: ShakeWidget(
+          controller: widget.controller,
+          child: Card(
+            child: SizedBox(
+              width: 300,
+              height: 120,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.holiday_village),
+                  Text('The ${widget.item.title}'),
+                  Text('Amount: ${widget.item.amount}')
+                ],
+              ),
+            ),
+          ),
+        ),
+        transform: Matrix4.translationValues(x, y, 0.0),
+      ),
+    );
+    ;
   }
 }
