@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animation/loading_animation.dart';
 import 'package:flutter_animation/tween_animation_page.dart';
 import 'package:flutter_animation/dashboard.dart';
 
@@ -18,9 +19,19 @@ class AnimationList extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => TweenAnimationPage()));
+                  builder: (context) => const TweenAnimationPage()));
             },
             child: const Text('Tween Animation'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const LoadingAnimation()));
+            },
+            child: const Text('Loading'),
           ),
         ),
         Padding(
