@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+/// https://pin.it/4YhDQ3A
 class IgnitiOn extends StatefulWidget {
   const IgnitiOn({Key? key}) : super(key: key);
 
@@ -11,8 +12,8 @@ class IgnitiOn extends StatefulWidget {
 class _IgnitiOnState extends State<IgnitiOn>
     with SingleTickerProviderStateMixin {
   final bubbles = List<Bubble>.generate(500, (index) {
-    double size = math.Random().nextInt(10) + 2.0;
-    double speed = math.Random().nextInt(50) + 1.0;
+    double size = math.Random().nextDouble() + 1.0;
+    double speed = math.Random().nextDouble();
     Color color = const Color(0xFF78A9E5);
     double direction = math.Random().nextInt(180) + 180 * math.pi;
 
@@ -21,6 +22,7 @@ class _IgnitiOnState extends State<IgnitiOn>
         speed: speed,
         color: color,
         direction: direction,
+        radians: math.Random().nextDouble() * 180.0,
         position: index * 10);
   });
 
@@ -31,14 +33,23 @@ class _IgnitiOnState extends State<IgnitiOn>
     super.initState();
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 1200),
     );
     animationController.forward();
+    animationController.addStatusListener(_updateStatus);
+  }
+
+  void _updateStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      animationController.reset();
+      animationController.forward();
+    }
   }
 
   @override
   void dispose() {
     animationController.dispose();
+    animationController.removeStatusListener(_updateStatus);
     super.dispose();
   }
 
@@ -63,7 +74,8 @@ class _IgnitiOnState extends State<IgnitiOn>
               height: 140,
               child: Container(
                 decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: Color(0xFF090521)),
+                    shape: BoxShape.circle, color: Colors.transparent),
+                //Color(0xFF090521)
               ),
             )
           ],
@@ -84,10 +96,12 @@ class BubblePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (Bubble bubble in bubbles) {
       final offset = Offset(
-          size.width / 2 + bubble.direction * animation.value,
-          size.height * (1 - animation.value) -
-              bubble.speed * animation.value +
-              bubble.position * (1 - animation.value));
+          size.width / 2 +
+              (70 + 120 * animation.value * bubble.speed) *
+                  math.cos(math.pi / 180 * (270 + bubble.radians)),
+          size.height / 2 +
+              (70 + 120 * animation.value * bubble.speed) *
+                  math.sin(math.pi / 180 * (270 + bubble.radians)));
       canvas.drawCircle(offset, bubble.size, Paint()..color = bubble.color);
     }
   }
@@ -130,11 +144,13 @@ class Bubble {
       required this.direction,
       required this.speed,
       required this.size,
-      required this.position});
+      required this.position,
+      required this.radians});
   final Color color;
   // 方向
   final double direction;
   final double speed;
   final double size;
   final double position;
+  final double radians;
 }
