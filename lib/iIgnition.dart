@@ -9,72 +9,77 @@ class IgnitiOn extends StatefulWidget {
   State<IgnitiOn> createState() => _IgnitiOnState();
 }
 
-class _IgnitiOnState extends State<IgnitiOn>
-    with SingleTickerProviderStateMixin {
-  final bubbles = List<Bubble>.generate(500, (index) {
-    double size = math.Random().nextDouble() + 1.0;
-    double speed = math.Random().nextDouble();
-    Color color = const Color(0xFF78A9E5);
-    double direction = math.Random().nextInt(180) + 180 * math.pi;
+class _IgnitiOnState extends State<IgnitiOn> with TickerProviderStateMixin {
+  final bubbles = List<List<Bubble>>.generate(
+      4,
+      (index) => List<Bubble>.generate(300, (index) {
+            double size = math.Random().nextDouble() + 1.0;
+            double speed = math.Random().nextDouble();
+            Color color = const Color(0xFF78A9E5);
 
-    return Bubble(
-        size: size,
-        speed: speed,
-        color: color,
-        direction: direction,
-        radians: math.Random().nextDouble() * 180.0,
-        position: index * 10);
-  });
-
-  late final AnimationController animationController;
+            return Bubble(
+                size: size,
+                speed: speed,
+                color: color,
+                radians: math.Random().nextDouble() * 180.0);
+          }));
+  late final List<AnimationController> controllers;
+  late final AnimationController animationController1;
+  late final AnimationController animationController2;
 
   @override
   void initState() {
     super.initState();
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    animationController.forward();
-    animationController.addStatusListener(_updateStatus);
+    initController();
   }
 
-  void _updateStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      animationController.reset();
-      animationController.forward();
+  void initController() async {
+    controllers = List.generate(
+        4,
+        (index) => AnimationController(
+              vsync: this,
+              duration: const Duration(milliseconds: 1000),
+            ));
+    for (var controller in controllers) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      controller.repeat();
     }
   }
 
   @override
   void dispose() {
-    animationController.dispose();
-    animationController.removeStatusListener(_updateStatus);
+    for (var controller in controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('IgnitiOn')),
-      backgroundColor: Color(0xFF090521),
+      appBar: AppBar(title: const Text('IgnitiOn')),
+      backgroundColor: const Color(0xFF090521),
       body: Center(
         child: Stack(
           children: [
-            CustomPaint(
-              foregroundPainter: BubblePainter(
-                  bubbles: bubbles, animation: animationController),
-              painter: OuterPainter(),
-              size: Size(200, 200),
-            ),
+            ...List.generate(
+                bubbles.length,
+                (index) => CustomPaint(
+                      foregroundPainter: BubblePainter(
+                          bubbles: bubbles[index],
+                          animation: controllers[index]),
+                      painter: OuterPainter(),
+                      size: const Size(200, 200),
+                    )).toList(),
+            // ),
             Positioned(
               top: 30,
               left: 30,
               width: 140,
               height: 140,
               child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: Colors.transparent),
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Color(0xFF090521)),
                 //Color(0xFF090521)
               ),
             )
@@ -97,12 +102,20 @@ class BubblePainter extends CustomPainter {
     for (Bubble bubble in bubbles) {
       final offset = Offset(
           size.width / 2 +
-              (70 + 120 * animation.value * bubble.speed) *
+              (65 + 200 * animation.value * bubble.speed) *
                   math.cos(math.pi / 180 * (270 + bubble.radians)),
           size.height / 2 +
-              (70 + 120 * animation.value * bubble.speed) *
+              (65 + 200 * animation.value * bubble.speed) *
                   math.sin(math.pi / 180 * (270 + bubble.radians)));
-      canvas.drawCircle(offset, bubble.size, Paint()..color = bubble.color);
+      late Color color;
+      if (animation.value == 0) {
+        color = bubble.color.withOpacity(0);
+      } else if (animation.value >= 0.6) {
+        color = bubble.color.withOpacity(1 - animation.value);
+      } else {
+        color = bubble.color;
+      }
+      canvas.drawCircle(offset, bubble.size, Paint()..color = color);
     }
   }
 
@@ -141,16 +154,12 @@ class OuterPainter extends CustomPainter {
 class Bubble {
   Bubble(
       {required this.color,
-      required this.direction,
       required this.speed,
       required this.size,
-      required this.position,
       required this.radians});
   final Color color;
-  // 方向
-  final double direction;
+  // 速度
   final double speed;
   final double size;
-  final double position;
   final double radians;
 }
