@@ -117,87 +117,149 @@ class _DashboardState extends State<Dashboard> {
                           color: Color.fromRGBO(50, 53, 58, 0.9),
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
-                        // height: 200,
+                        height: 220,
                         width: size.width,
                         child: Padding(
-                          child: Image.asset('images/img4.png'),
-                          padding: const EdgeInsets.all(20.0),
+                          child: Image.asset(
+                            'images/img4.png',
+                            fit: BoxFit.contain,
+                          ),
+                          padding: const EdgeInsets.all(16.0),
                         ),
                       ),
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Color.fromRGBO(50, 53, 58, 0.98),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                        ),
-                        // height: 200,
-                        width: size.width,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: Column(children: [
-                            Container(
-                              height: 5,
-                              width: 36,
-                              decoration: const BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8)),
-                                color: Color(0xFF6E7478),
+                      Opacity(
+                        opacity: 1,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color.fromRGBO(75, 77, 83, 0.98),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          height: 220,
+                          width: size.width,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: Column(children: [
+                              GestureDetector(
+                                onVerticalDragUpdate: (details) {},
+                                onVerticalDragEnd: (details) {},
+                                child: Container(
+                                  height: 5,
+                                  width: 36,
+                                  decoration: const BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8)),
+                                    color: Color(0xFF6E7478),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Balance',
-                                  style: TextStyle(color: Color(0xFF87888F)),
-                                ),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size(64, 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Balance',
+                                    style: TextStyle(color: Color(0xFF87888F)),
+                                  ),
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size(64, 20),
+                                      ),
+                                      onPressed: () {},
+                                      child: const Text(
+                                        'See more',
+                                        style: TextStyle(fontSize: 8),
+                                      ))
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    'images/icon-dollar.png',
+                                    height: 24,
+                                    width: 24,
+                                  ),
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                  const Text(
+                                    '6,421.52',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 24),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(
+                                    '23 March',
+                                    style: TextStyle(color: Color(0xFF87888F)),
+                                  ),
+                                  Text(
+                                    '- \$813',
+                                    style: TextStyle(color: Color(0xFF87888F)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFF33373C),
+                                        borderRadius: BorderRadius.circular(8)),
+                                    height: 36,
+                                    width: 36,
+                                    child: Image.asset(
+                                      'images/icons8-image.png',
+                                      height: 16,
+                                      width: 16,
                                     ),
-                                    onPressed: () {},
-                                    child: const Text(
-                                      'See more',
-                                      style: TextStyle(fontSize: 8),
-                                    ))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  'images/icon-dollar.png',
-                                  height: 24,
-                                  width: 24,
-                                ),
-                                const SizedBox(
-                                  width: 6,
-                                ),
-                                const Text(
-                                  '6,421.52',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 24),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
-                                Text(
-                                  '23 March',
-                                  style: TextStyle(color: Color(0xFF87888F)),
-                                ),
-                                Text(
-                                  '- \$813',
-                                  style: TextStyle(color: Color(0xFF87888F)),
-                                ),
-                              ],
-                            )
-                          ]),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: const [
+                                        Text('ATM, 375 Canal St',
+                                            style: TextStyle(
+                                                color: Color(0xFFCCCED1),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16)),
+                                        SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text('Cash withdrawal',
+                                            style: TextStyle(
+                                                color: Color(0xFFCCCED1),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12))
+                                      ],
+                                    ),
+                                  ),
+                                  const Text(
+                                    '- \$300',
+                                    style: TextStyle(
+                                        color: Color(0xFFCCCED1),
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 20),
+                                  ),
+                                ],
+                              )
+                            ]),
+                          ),
                         ),
                       ),
                     ],
